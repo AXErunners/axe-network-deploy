@@ -1,0 +1,14 @@
+# Ansible
+/ansible/*.retry
+
+# Node.JS
+node_modules
+
+# Vagrant
+.vagrant
+
+# Terraform
+/terraform/aws/.terraform
+
+# Jet Brains
+.idea
