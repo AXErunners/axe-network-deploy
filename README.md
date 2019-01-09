@@ -1,4 +1,4 @@
-# Axe Network Deployment Tool
+# AXE Network Deployment Tool
 
 ## Introduction
 
