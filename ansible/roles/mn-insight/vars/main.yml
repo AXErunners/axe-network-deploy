@@ -1,0 +1,10 @@
+---
+
+mn_insight_compose_project_name: insight
+
+mn_insight_path: '{{ axed_home }}/{{ mn_insight_compose_project_name }}'
+
+mn_insight_axed_rpchost: '{{ private_ip }}'
+mn_insight_axed_rpc_port: '{{ axed_rpc_port }}'
+mn_insight_axed_rpc_user: '{{ axed_rpc_user }}'
+mn_insight_axed_rpc_password: '{{ axed_rpc_password }}'

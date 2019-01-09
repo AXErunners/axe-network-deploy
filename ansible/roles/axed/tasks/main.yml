@@ -1,0 +1,60 @@
+---
+
+- name: Create axed group
+  group:
+    name: '{{ axed_group }}'
+
+- name: Create axed user
+  user:
+    name: '{{ axed_user }}'
+    group: '{{ axed_group }}'
+    append: False
+    home: '{{ axed_home }}'
+
+- name: get uid of axe user
+  shell: id -u {{ axed_user }}
+  register: axe_user_id
+- name: get gid of axe user
+  shell: id -g {{ axed_user }}
+  register: axe_group_id
+
+- name: create axe home/data dir
+  file: path={{ axed_home }} state=directory mode='0750' owner='{{ axed_user }}' group='{{ axed_group }}'
+- name: create .axecore dir
+  file: path={{ axed_home }}/.axecore state=directory mode='0750' owner='{{ axed_user }}' group='{{ axed_group }}'
+- name: create .axecore dir for root
+  file: path=/root/.axecore state=directory mode='0750' owner='root' group='root'
+
+- name: Configure axed
+  template:
+    src: 'axe.conf.j2'
+    dest: '{{ axed_home }}/.axecore/axe.conf'
+    owner: '{{ axed_user }}'
+    group: '{{ axed_group }}'
+    mode: '0640'
+  register: axe_config_state
+
+- name: copy configuration to root user dir to make rpc work
+  shell: cp {{ axed_home }}/.axecore/axe.conf /root/.axecore/
+
+- name: create axed container
+  docker_container:
+    name: axed
+    state: started
+    restart: '{{ axe_config_state is changed }}'
+    restart_policy: always
+    image: '{{ axed_image }}'
+    pull: true
+    user: '{{ axe_user_id.stdout }}:{{ axe_group_id.stdout }}'
+    working_dir: '{{ axed_home }}'
+    volumes:
+    - '{{ axed_home }}:/axe'
+    network_mode: host
+    command: 'axed -conf={{ axed_home }}/.axecore/axe.conf -datadir={{ axed_home }}/.axecore'
+
+- name: wait for rpc to be available
+  shell: axe-cli getinfo
+  register: task_result
+  until: task_result.rc == 0
+  retries: 5
+  delay: 10

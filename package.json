@@ -1,0 +1,42 @@
+{
+  "name": "@axerunners/axe-network-deploy",
+  "version": "0.9.0",
+  "description": "Axe Network deployment tool",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "bin/test",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axerunners/axe-network-deploy.git"
+  },
+  "author": "Axe Developer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/axerunners/axe-network-deploy/issues"
+  },
+  "homepage": "https://github.com/axerunrers/axe-network-deploy#readme",
+  "devDependencies": {
+    "@axerunners/axed-rpc": "^1.2.0",
+    "jayson": "^2.0.6",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "chai-arrays": "^2.0.0",
+    "dirty-chai": "^2.0.1",
+    "eslint": "^5.4.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "js-yaml": "^3.12.0",
+    "loaxe.merge": "^4.6.1",
+    "mocha": "^5.2.0",
+    "node-fetch": "^2.2.0",
+    "ipfs-api": "^24.0.1",
+    "node-openvpn": "github:luigiplr/node-openvpn",
+    "dockerode": "^2.5.7",
+    "multiaddr": "5.0.0"
+  }
+}

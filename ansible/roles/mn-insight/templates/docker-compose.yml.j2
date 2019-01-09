@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  insight:
+    image: {{ insight_image }}
+    container_name: {{ mn_insight_compose_project_name }}_insight
+    restart: always
+    ports:
+      - 3001:3001
+    volumes:
+      - {{ mn_insight_path }}/bitcore-node-axe.json:/insight/bitcore-node-axe.json

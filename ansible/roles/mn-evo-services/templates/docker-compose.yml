@@ -1,0 +1,89 @@
+version: '3'
+
+services:
+  drive_sync:
+    image: {{ drive_image }}
+    container_name: {{ mn_evo_services_compose_project_name }}_drive_sync
+    restart: always
+    command: npm run sync
+    environment:
+      - AXECORE_JSON_RPC_USER={{ axed_rpc_user }}
+      - AXECORE_JSON_RPC_PASS={{ axed_rpc_password }}
+      - AXECORE_JSON_RPC_HOST={{ private_ip }}
+      - AXECORE_JSON_RPC_PORT={{ axed_rpc_port }}
+      - AXECORE_ZMQ_PUB_HASHBLOCK=tcp://{{ private_ip }}:{{ axed_zmq_port }}
+      - STORAGE_MONGODB_URL=mongodb://drive_mongodb:27017
+      - STORAGE_IPFS_MULTIADDR=/ip4/{{ private_ip }}/tcp/5001
+      - STORAGE_IPFS_TIMEOUT=10
+      - SYNC_STATE_TRANSITION_SKIP_WITH_ERRORS=true
+    depends_on:
+      - ipfs
+      - drive_mongodb
+
+  drive_api:
+    image: {{ drive_image }}
+    container_name: {{ mn_evo_services_compose_project_name }}_drive_api
+    restart: always
+    command: npm run api
+    environment:
+      - AXECORE_JSON_RPC_USER={{ axed_rpc_user }}
+      - AXECORE_JSON_RPC_PASS={{ axed_rpc_password }}
+      - AXECORE_JSON_RPC_HOST={{ private_ip }}
+      - AXECORE_JSON_RPC_PORT={{ axed_rpc_port }}
+      - STORAGE_MONGODB_URL=mongodb://drive_mongodb:27017
+      - STORAGE_IPFS_MULTIADDR=/ip4/{{ private_ip }}/tcp/5001
+    depends_on:
+      - ipfs
+      - drive_mongodb
+    ports:
+      - 6000:6000
+
+  drive_mongodb:
+    image: mongo:3.6
+    container_name: {{ mn_evo_services_compose_project_name }}_drive_mongodb
+    volumes:
+      - drive_mongodb:/data/db
+
+  ipfs:
+    image: {{ ipfs_image }}
+    container_name: {{ mn_evo_services_compose_project_name }}_ipfs
+    command: daemon --enable-gc --migrate --enable-pubsub-experiment
+    environment:
+      LIBP2P_FORCE_PNET: 1
+      SWARM_KEY: "{{ ipfs_swarm_key | default('${SWARM_KEY}') | replace('\n', '\\n') }}"
+      SWARM_PEER: "{{ ipfs_swarm_peer | default('${SWARM_PEER}') }}"
+    ports:
+      - 4001:4001
+      - 5001:5001
+    volumes:
+      - ipfs:/data/ipfs
+      - {{ mn_evo_services_path }}/ipfs/init.sh:/usr/local/bin/start_ipfs
+
+  dapi:
+    image: {{ dapi_image }}
+    container_name: {{ mn_evo_services_compose_project_name }}_dapi
+    restart: always
+    depends_on:
+      - ipfs
+    ports:
+      - 3000:3000
+    environment:
+      - INSIGHT_URI=http://{{ private_ip }}:3001/insight-api-axe
+      - RPC_SERVER_PORT=3000
+      - AXECORE_RPC_HOST={{ private_ip }}
+      - AXECORE_RPC_PORT={{ axed_rpc_port }}
+      - AXECORE_RPC_USER={{ axed_rpc_user }}
+      - AXECORE_RPC_PASS={{ axed_rpc_password }}
+      - AXECORE_ZMQ_HOST={{ private_ip }}
+      - AXECORE_ZMQ_PORT={{ axed_zmq_port }}
+      - AXECORE_P2P_HOST={{ private_ip }}
+      - AXECORE_P2P_PORT={{ axed_port }}
+      - AXECORE_P2P_NETWORK={{ axe_network }}
+      - AXEDRIVE_RPC_HOST=drive_api
+      - AXEDRIVE_RPC_PORT=6000
+      - NETWORK={{ axe_network }}
+
+volumes:
+  drive_mongodb:
+  ipfs:
+

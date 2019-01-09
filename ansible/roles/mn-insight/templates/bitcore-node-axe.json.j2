@@ -1,0 +1,24 @@
+{
+  "network": "{{ 'mainnet' if axe_network == 'mainnet' else 'testnet' }}",
+  "port": 3001,
+  "services": [
+    "bitcoind",
+    "insight-api-axe",
+    "web"
+  ],
+  "servicesConfig": {
+    "bitcoind": {
+      "connect": [{
+        "rpchost": "{{ mn_insight_axed_rpchost }}",
+        "rpcport": {{ mn_insight_axed_rpc_port }},
+        "rpcuser": "{{ mn_insight_axed_rpc_user }}",
+        "rpcpassword": "{{ mn_insight_axed_rpc_password }}",
+        "zmqpubrawtx": "tcp://{{ mn_insight_axed_rpchost }}:{{ axed_zmq_port }}",
+        "zmqpubhashblock": "tcp://{{ mn_insight_axed_rpchost }}:{{ axed_zmq_port }}"
+      }]
+    },
+    "insight-api-axe": {
+      "disableRateLimiter": true
+    }
+  }
+}

@@ -1,0 +1,10 @@
+[Unit]
+After=network.target
+
+[Service]
+User={{ axed_user }}
+Group={{ axed_group }}
+ExecStart=/usr/local/bin/axed-generate-miner.sh
+
+[Install]
+WantedBy=default.target

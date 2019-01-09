@@ -1,0 +1,16 @@
+---
+
+axed_debug: 1
+
+axed_indexes: false
+axed_zmq: false
+
+axed_listen: false
+axed_externalip: '{{ public_ip }}'
+axed_isseednode: '{{ axed_externalip == axed_seednode }}'
+
+axed_private_net_prefix: 16
+axed_private_cidr: '{{ private_ip|ipsubnet(axed_private_net_prefix) }}'
+
+# When running devnet/regtest in local networks, we have to allow RFC1918/private addresses
+axed_allowprivatenet: '{% if axed_externalip|ipaddr("private") == axed_externalip %}1{% else %}0{% endif %}'

@@ -1,0 +1,81 @@
+# general
+
+{% if axe_network == 'regtest' %}
+regtest=1
+{% elif axe_network == 'testnet' %}
+testnet=1
+{% elif axe_network == 'devnet' %}
+devnet={{ axe_devnet_name }}
+{% endif %}
+
+daemon=0  # leave this set to 0 for Docker
+logtimestamps=1
+maxconnections=256
+debug={{ axed_debug }}
+
+{% if axed_indexes %}
+# optional indices (required for Insight)
+txindex=1
+addressindex=1
+timestampindex=1
+spentindex=1
+{% endif %}
+
+{% if axed_zmq %}
+# ZeroMQ notifications (required for Insight)
+zmqpubrawtx=tcp://0.0.0.0:{{ axed_zmq_port }}
+zmqpubrawtxlock=tcp://0.0.0.0:{{ axed_zmq_port }}
+zmqpubhashblock=tcp://0.0.0.0:{{ axed_zmq_port }}
+#zmqpubhashtx=tcp://0.0.0.0:{{ axed_zmq_port }}
+#zmqpubhashtxlock=tcp://0.0.0.0:{{ axed_zmq_port }}
+#zmqpubrawblock=tcp://0.0.0.0:{{ axed_zmq_port }}
+{% endif %}
+
+# JSONRPC
+server=1
+rpcport={{ axed_rpc_port }}
+rpcuser={{ axed_rpc_user }}
+rpcpassword={{ axed_rpc_password }}
+
+{% if axed_rpc_allow_public %}
+rpcallowip=::/0
+rpcallowip=0.0.0.0/0
+{% else %}
+rpcallowip={{ axed_private_cidr }}
+rpcallowip=127.0.0.0
+rpcallowip=172.0.0.0/8
+rpcallowip={{ hostvars['vpn'].public_ip }}/32
+{% endif %}
+
+rpcworkqueue=64
+rpcthreads=16
+
+# external network
+{% if axed_listen %}
+listen=1
+{% else %}
+listen=0
+{% endif %}
+externalip={{ axed_externalip }}
+bind=0.0.0.0
+port={{ axed_port }}
+dnsseed=0
+allowprivatenet={{ axed_allowprivatenet }}
+
+printtoconsole=1
+
+{% if axed_seednode is not none and not axed_isseednode %}
+addnode={{ axed_seednode }}:{{ axed_port }}
+{% endif %}
+
+{% if masternode is defined %}
+masternode=1
+masternodeprivkey={{ masternode.mn_operator_key }}
+{% endif %}
+
+{% if axed_sporkaddr is defined %}
+sporkaddr={{ axed_sporkaddr }}
+{% endif %}
+{% if axed_sporkkey is defined %}
+sporkkey={{ axed_sporkkey }}
+{% endif %}

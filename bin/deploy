@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+set -ea
+
+. ./lib/cli/utils.sh
+
+ansible_playbook="deploy.yml"
+
+CMD_USAGE="Deploy Axe Network
+
+Usage: deploy [options] <network_name>
+
+Options:
+  -i        --only-infrastructure         - Only build infrastructure using Terraform
+  -p        --only-provisioning           - Only provisioning using Ansible
+  -a=<args> --ansible-args=<args>         - Pass extra arguments to ansible-playbook command
+            --ansible-playbook=<playbook> - Specify custom playbook. Default: deploy
+  -h        --help                        - Show help"
+
+for i in "$@"
+do
+case ${i} in
+    -i|--only-infrastructure)
+    ONLY_INFRASTRUCTURE=1
+    ;;
+    -p|--only-provisioning)
+    ONLY_PROVISIONING=1
+    ;;
+    -a=*|--ansible-args=*)
+    ANSIBLE_ARGS="${i#*=}"
+    ;;
+    --ansible-playbook=*)
+    ansible_playbook="${i#*=}.yml"
+    ;;
+    -h|--help)
+        echo "$CMD_USAGE"
+        exit 0
+    ;;
+    *)
+    NETWORK_NAME="${i#*=}"
+    ;;
+esac
+done
+
+. ./lib/cli/init.sh
+. ./lib/cli/terraform.sh
+. ./lib/cli/ansible.sh
+
+echo "Deploying $NETWORK_NAME network...";
+
+# Setup infrastructure using Terraform
+
+if [ -z ${ONLY_PROVISIONING} ]; then
+    terraform_run_command "apply"
+else
+    echo "Skipping Terraform infrastructure deployment"
+fi
+
+# Install software and configure axe network using Ansible
+
+if [ -z ${ONLY_INFRASTRUCTURE} ]; then
+    ansible_run_playbook "$ansible_playbook"
+else
+    echo "Skipping Ansible provisioning"
+fi
+
+

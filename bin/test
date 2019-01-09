@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+set -ea
+
+. ./lib/cli/utils.sh
+
+CMD_USAGE="Test Axe Network
+
+Usage: test [options] <network_name>
+
+Options:
+  -m=<args>  --mocha-args=<args> - Mocha arguments
+  -h         --help              - Show help"
+
+# Only smoke tests available at the moment.
+#
+#  -t=<types> --types=<types>     - Test types: smoke. You may specify several using comma delimiter
+
+for i in "$@"
+do
+case ${i} in
+    -m=*|--mocha-args=*)
+    MOCHA_ARGUMENTS="${i#*=}"
+    ;;
+    -t=*|--types=*)
+    TEST_TYPES="${i#*=}"
+    ;;
+    -h|--help)
+        echo "$CMD_USAGE"
+        exit 0
+    ;;
+    *)
+    NETWORK_NAME="${i#*=}"
+    ;;
+esac
+done
+
+. ./lib/cli/init.sh
+. ./lib/cli/terraform.sh
+. ./lib/cli/ansible.sh
+. ./lib/cli/test.sh
+
+echo "Run test against $NETWORK_NAME network...";
+
+test_run

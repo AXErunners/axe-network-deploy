@@ -1,0 +1,37 @@
+---
+
+- name: create masternode evolution services dir
+  file: path='{{ mn_evo_services_path }}' state=directory recurse=true
+
+- name: copy masternode evolution services docker compose
+  template:
+    src: '{{ item }}'
+    dest: '{{ mn_evo_services_path }}/{{ item }}'
+  loop:
+    - docker-compose.yml
+    - .env
+
+- import_tasks: ipfs/main.yml
+
+- name: start masternodes evolution services
+  docker_service:
+    project_src: '{{ mn_evo_services_path }}'
+    state: present
+    restarted: yes
+    pull: yes
+
+- name: check AxeDrive sync container
+  assert:
+    that: 'drive_sync.{{ mn_evo_services_compose_project_name }}_drive_sync.state.running'
+
+- name: check AxeDrive API container
+  assert:
+    that: 'drive_api.{{ mn_evo_services_compose_project_name }}_drive_api.state.running'
+
+- name: check AxeDrive MongoDB container
+  assert:
+    that: 'drive_mongodb.{{ mn_evo_services_compose_project_name }}_drive_mongodb.state.running'
+
+- name: check DAPI container
+  assert:
+    that: 'dapi.{{ mn_evo_services_compose_project_name }}_dapi.state.running'

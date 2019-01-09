@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  sentinel:
+    image: {{ sentinel_image }}
+    container_name: {{ mn_sentinel_compose_project_name }}_sentinel
+    restart: always
+    environment:
+      - DEBUG=false
+      - RPCUSER={{ axed_rpc_user }}
+      - RPCPASSWORD={{ axed_rpc_password }}
+      - RPCHOST={{ private_ip }}
+      - RPCPORT={{ axed_rpc_port }}
+      # Sentinel only supports mainnet and testnet at the moment
+      - NETWORK={{ 'mainnet' if axe_network == 'mainnet' else 'testnet' }}
+      # Bypass scheduler
+      - SENTINEL_ARGS=-b

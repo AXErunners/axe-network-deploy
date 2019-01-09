@@ -1,0 +1,7 @@
+---
+
+- name: pull axed image
+  shell: docker pull {{ axed_image }}
+
+- name: copy axe-cli from docker container
+  shell: docker run --rm -v /tmp:/host-tmp {{ axed_image }} cp /usr/bin/axe-cli /host-tmp/ && mv /tmp/axe-cli /usr/local/bin/axe-cli
