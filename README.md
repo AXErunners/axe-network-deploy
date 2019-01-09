@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This tool allows deploy and manage Axe networks.
+This tool allows deploy and manage [AXE](https://github.com/AXErunners/axe) networks.
 
 There are two regular available networks: `testnet` and `mainnet`.
 After deployment your AxeCore instances will join to those networks.
