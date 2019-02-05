@@ -118,35 +118,16 @@ It possible to specify several types using comma delimiter.
 2. Get current block height:
 
     ```bash
-    docker run -ti --rm \
-               -v "$PWD:/networks" \
-               -v "$HOME/.aws:/root/.aws" \
-               -v "<your-public-key-path>:<your-public-key-path>" \
-               -v "<your-private-key-path>:<your-private-key-path>" \
-               -w "/usr/src/app/ansible" \
-               axerunners/axe-network-deploy ansible axed-wallet-2 \
-               -i ../networks/<network_name>.inventory \
-               --private-key=<your-private-key-path> \
-               -b -m command -a "axe-cli getblockcount"
+    axe-network axe-cli axed-wallet-2 getblockcount
     ```
 
-
-3. Enable Masternode List after ten new blocks:
+3. Enable DML (DIP3) after ten new blocks:
 
     ```bash
-    docker run -ti --rm \
-                   -v "$PWD:/networks" \
-                   -v "$HOME/.aws:/root/.aws" \
-                   -v "<your-public-key-path>:<your-public-key-path>" \
-                   -v "<your-private-key-path>:<your-private-key-path>" \
-                   -w "/usr/src/app/ansible" \
-                   axerunners/axe-network-deploy ansible axed-wallet-2 \
-                   -i ../networks/<network_name>.inventory \
-                   --private-key=<your-private-key-path> \
-                   -b -m command -a "axe-cli spork SPORK_15_DETERMINISTIC_MNS_ENABLED <current_block_height+10>"
+    axe-network axe-cli axed-wallet-2 spork SPORK_15_DETERMINISTIC_MNS_ENABLED <current_block_height+10>
     ```
 
-4. Upgrade your MNs to ProTX when DIP3 is enabled
+4. Upgrade your MNs to ProTX when DML is enabled
   (see [getBlockChainInfo](https://axe-docs.github.io/en/developer-reference#getblockchaininfo)):
 
    ```bash
